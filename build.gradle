@@ -14,8 +14,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '1.0'
-group = 'com.yourname.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'modid'
+group = 'ch.ltouroumov.ouroboros' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'ouroboros'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
@@ -56,7 +56,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                ouroboros {
                     source sourceSets.main
                 }
             }
@@ -78,7 +78,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                ouroboros {
                     source sourceSets.main
                 }
             }
@@ -100,10 +100,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'ouroboros', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                examplemod {
+                ouroboros {
                     source sourceSets.main
                 }
             }
@@ -122,12 +122,25 @@ repositories {
             includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
         }
     }
+    maven {
+        url 'https://www.cursemaven.com'
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        url 'https://modmaven.dev/'
+    }
+
     repositories.stream().filter { it instanceof MavenArtifactRepository }.forEach { repo ->
         repo.content {
             excludeVersionByRegex(".*", ".*", ".*_mapped_snapshot_.*")
         }
     }
 }
+
+String jei_version = '7.7.1.126'
+String mekanism_version = '10.0.22.449'
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
@@ -149,6 +162,14 @@ dependencies {
     // These dependencies get remapped to your current MCP mappings
     // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
+    // Just Enough Items
+    compileOnly fg.deobf("mezz.jei:jei-1.16.5:${jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.16.5:${jei_version}")
+
+    // Mekanism
+    compileOnly fg.deobf("curse.maven:mekanism-268560:3497015:api")
+    runtimeOnly fg.deobf("curse.maven:mekanism-268560:3497015")
+
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
@@ -167,12 +188,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "examplemod",
-                "Specification-Vendor"    : "examplemodsareus",
+                "Specification-Title"     : "ouroboros",
+                "Specification-Vendor"    : "ltouroumov",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${version}",
-                "Implementation-Vendor"   : "examplemodsareus",
+                "Implementation-Version"  : "${archiveVersion}",
+                "Implementation-Vendor"   : "ltouroumov",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

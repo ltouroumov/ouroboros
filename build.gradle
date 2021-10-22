@@ -1,10 +1,12 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:5.17.0"
     }
 }
 apply plugin: 'scala'
@@ -12,6 +14,7 @@ apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: "com.diffplug.spotless"
 
 version = '1.0'
 group = 'ch.ltouroumov.ouroboros' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -108,6 +111,13 @@ minecraft {
                 }
             }
         }
+    }
+}
+
+spotless {
+    scala {
+        // version and configFile are both optional
+        scalafmt().configFile('.scalafmt.conf')
     }
 }
 

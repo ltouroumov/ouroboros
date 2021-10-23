@@ -2,7 +2,7 @@ package ch.ltouroumov.ouroboros.blocks.other
 
 import ch.ltouroumov.ouroboros.blocks
 import ch.ltouroumov.ouroboros.blocks.Properties.MachineTier
-import ch.ltouroumov.ouroboros.blocks.machine.CrusherMachineBlock
+import ch.ltouroumov.ouroboros.blocks.machine.{CrusherMachineBlock, CrusherMachineEntity}
 import ch.ltouroumov.ouroboros.blocks.{BaseEntityBlock, Properties}
 import ch.ltouroumov.ouroboros.registry.BlocksRegistry
 import ch.ltouroumov.ouroboros.utils.StrictLogging
@@ -32,6 +32,18 @@ class StructureBlock(properties: AbstractBlock.Properties) extends BaseEntityBlo
   override def createTileEntity(state: BlockState, world: IBlockReader): TileEntity =
     Option.when(state.getValue(Properties.MACHINE_PART))(StructureBlock.entity()).orNull
 
+  override def playerWillDestroy(
+      world: World,
+      position: BlockPos,
+      blockState: BlockState,
+      player: PlayerEntity
+  ): Unit = {
+    super.playerWillDestroy(world, position, blockState, player)
+    getMachineEntity(world, position).foreach { entity =>
+      entity.structureDestroyed(position)
+    }
+  }
+
   override def use(
       blockState: BlockState,
       world: World,
@@ -43,23 +55,39 @@ class StructureBlock(properties: AbstractBlock.Properties) extends BaseEntityBlo
     if (world.isClientSide)
       ActionResultType.SUCCESS
     else
-      Option(world.getBlockEntity(position)) match {
-        case Some(value: StructureEntity) =>
-          value.machinePos match {
-            case Some(pos) =>
-              logger.debug(s"Structure block $position ($blockState) forward use call to $pos")
-              world.getBlockState(pos).use(world, player, hand, hit)
-            case None =>
-              ActionResultType.PASS
-          }
-        case Some(other) =>
-          logger.warn(s"Wrong TileEntity is set to Structure: $other")
-          ActionResultType.PASS
+      getMachineBlockState(world, position) match {
+        case Some(block) =>
+          logger.debug(s"Structure block $position ($blockState) forward use call")
+          block.use(world, player, hand, hit)
         case None =>
           logger.debug(s"Structure block ($blockState) has no entity")
           ActionResultType.PASS
       }
   }
+
+  private def getMachinePos(world: World, position: BlockPos) = {
+    Option(world.getBlockEntity(position))
+      .flatMap {
+        case value: StructureEntity => value.machinePos
+        case _                      => None
+      }
+  }
+  private def getMachineEntity(world: World, position: BlockPos): Option[CrusherMachineEntity] =
+    getMachinePos(world, position)
+      .flatMap { machinePos =>
+        Option(world.getBlockEntity(machinePos))
+      }
+      .flatMap {
+        case value: CrusherMachineEntity => Some(value)
+        case _                           => None
+      }
+
+  private def getMachineBlockState(world: World, position: BlockPos): Option[BlockState] =
+    getMachinePos(world, position)
+      .flatMap { machinePos =>
+        Option(world.getBlockState(machinePos))
+      }
+
 }
 
 object StructureBlock extends blocks.BaseEntityBlock.Companion[StructureBlock, StructureEntity] {

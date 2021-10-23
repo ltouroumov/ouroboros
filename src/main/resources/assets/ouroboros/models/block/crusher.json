@@ -1,6 +1,7 @@
 {
   "parent": "block/cube",
   "textures": {
+    "particle": "ouroboros:block/sturdy",
     "all": "ouroboros:block/sturdy",
     "sides": "ouroboros:block/engineering_1"
   },

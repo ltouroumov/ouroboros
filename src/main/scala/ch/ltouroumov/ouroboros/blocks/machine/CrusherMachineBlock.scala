@@ -37,6 +37,21 @@ class CrusherMachineBlock(properties: AbstractBlock.Properties) extends BaseEnti
   override def createTileEntity(state: BlockState, world: IBlockReader): TileEntity =
     Option.when(state.getValue(Properties.MACHINE_PART))(CrusherMachineBlock.entity()).orNull
 
+  override def playerWillDestroy(
+      world: World,
+      position: BlockPos,
+      blockState: BlockState,
+      player: PlayerEntity
+  ): Unit = {
+    super.playerWillDestroy(world, position, blockState, player)
+    Option(world.getBlockEntity(position)) match {
+      case Some(value: CrusherMachineEntity) =>
+        value.structureDestroyed(position)
+      case None =>
+        ()
+    }
+  }
+
   override def use(
       state: BlockState,
       world: World,

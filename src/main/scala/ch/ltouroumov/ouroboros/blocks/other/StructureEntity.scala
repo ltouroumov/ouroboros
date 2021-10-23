@@ -1,23 +1,23 @@
 package ch.ltouroumov.ouroboros.blocks.other
 
 import ch.ltouroumov.ouroboros.registry.TileEntityRegistry
-import ch.ltouroumov.ouroboros.utils.StrictLogging
+import ch.ltouroumov.ouroboros.utils.{StrictLogging, TileEntityHelpers}
 import net.minecraft.block.BlockState
 import net.minecraft.nbt.{CompoundNBT, NBTUtil}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 
-class StructureEntity extends TileEntity(TileEntityRegistry.STRUCTURE.get()) with StrictLogging {
+class StructureEntity extends TileEntity(TileEntityRegistry.STRUCTURE.get()) with TileEntityHelpers with StrictLogging {
 
   private var _machinePos: Option[BlockPos] = None
 
   def machinePos: Option[BlockPos] = _machinePos
 
-  def setMachinePos(pos: BlockPos): StructureEntity = {
-    _machinePos = Some(pos)
-    setChanged()
-    this
-  }
+  def setMachinePos(pos: BlockPos): StructureEntity =
+    setter { _machinePos = Some(pos) }
+
+  def clearMachinePos(): StructureEntity =
+    setter { _machinePos = None }
 
   override def load(blockState: BlockState, nbtData: CompoundNBT): Unit = {
     super.load(blockState, nbtData)

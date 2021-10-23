@@ -8,7 +8,15 @@ class CrusherMachineEntity
     extends TileEntity(TileEntityRegistry.CRUSHER.get())
     with ITickableTileEntity
     with StrictLogging {
+
+  var _tickCounter: Int = 0
+
   override def tick(): Unit = {
-    logger.debug(s"Ticking crusher at $getBlockPos, state=$getBlockState")
+    _tickCounter += 1
+
+    if (_tickCounter >= 20) {
+      logger.debug(s"Ticking crusher at $getBlockPos, state=$getBlockState")
+      _tickCounter = 0
+    }
   }
 }

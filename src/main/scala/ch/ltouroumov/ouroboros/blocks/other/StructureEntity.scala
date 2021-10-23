@@ -7,9 +7,9 @@ import net.minecraft.nbt.{CompoundNBT, NBTUtil}
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 
-class StructureEntity(private var _machinePos: Option[BlockPos] = None)
-    extends TileEntity(TileEntityRegistry.STRUCTURE.get())
-    with StrictLogging {
+class StructureEntity extends TileEntity(TileEntityRegistry.STRUCTURE.get()) with StrictLogging {
+
+  private var _machinePos: Option[BlockPos] = None
 
   def machinePos: Option[BlockPos] = _machinePos
 

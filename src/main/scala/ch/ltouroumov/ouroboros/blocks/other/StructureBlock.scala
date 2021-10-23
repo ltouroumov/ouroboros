@@ -2,6 +2,7 @@ package ch.ltouroumov.ouroboros.blocks.other
 
 import ch.ltouroumov.ouroboros.blocks
 import ch.ltouroumov.ouroboros.blocks.Properties.MachineTier
+import ch.ltouroumov.ouroboros.blocks.machine.CrusherMachineBlock
 import ch.ltouroumov.ouroboros.blocks.{BaseEntityBlock, Properties}
 import ch.ltouroumov.ouroboros.registry.BlocksRegistry
 import ch.ltouroumov.ouroboros.utils.StrictLogging
@@ -9,9 +10,10 @@ import ch.ltouroumov.ouroboros.utils.syntax.BlockStateOps
 import net.minecraft.block.{AbstractBlock, Block, BlockState}
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.state.StateContainer
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.{BlockPos, BlockRayTraceResult}
 import net.minecraft.util.{ActionResultType, Hand}
-import net.minecraft.world.World
+import net.minecraft.world.{IBlockReader, World}
 
 class StructureBlock(properties: AbstractBlock.Properties) extends BaseEntityBlock(properties) with StrictLogging {
   registerDefaultState(
@@ -23,6 +25,12 @@ class StructureBlock(properties: AbstractBlock.Properties) extends BaseEntityBlo
 
   override def createBlockStateDefinition(builder: StateContainer.Builder[Block, BlockState]): Unit =
     builder.add(Properties.MACHINE_TIER, Properties.MACHINE_PART)
+
+  override def hasTileEntity(state: BlockState): Boolean =
+    state.getValue(Properties.MACHINE_PART)
+
+  override def createTileEntity(state: BlockState, world: IBlockReader): TileEntity =
+    Option.when(state.getValue(Properties.MACHINE_PART))(StructureBlock.entity()).orNull
 
   override def use(
       blockState: BlockState,
@@ -39,7 +47,7 @@ class StructureBlock(properties: AbstractBlock.Properties) extends BaseEntityBlo
         case Some(value: StructureEntity) =>
           value.machinePos match {
             case Some(pos) =>
-              logger.debug(s"Structure block $position forward use call to $pos")
+              logger.debug(s"Structure block $position ($blockState) forward use call to $pos")
               world.getBlockState(pos).use(world, player, hand, hit)
             case None =>
               ActionResultType.PASS
@@ -48,6 +56,7 @@ class StructureBlock(properties: AbstractBlock.Properties) extends BaseEntityBlo
           logger.warn(s"Wrong TileEntity is set to Structure: $other")
           ActionResultType.PASS
         case None =>
+          logger.debug(s"Structure block ($blockState) has no entity")
           ActionResultType.PASS
       }
   }

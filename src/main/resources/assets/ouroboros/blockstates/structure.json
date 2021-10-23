@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "machine_tier=t0": {
+      "model": "ouroboros:block/structure_t0"
+    }
+  }
+}

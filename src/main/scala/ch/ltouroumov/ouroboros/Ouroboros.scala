@@ -1,6 +1,6 @@
 package ch.ltouroumov.ouroboros
 
-import ch.ltouroumov.ouroboros.registry.{BlockItemsRegistry, BlocksRegistry}
+import ch.ltouroumov.ouroboros.registry.{BlockItemsRegistry, BlocksRegistry, TileEntityRegistry}
 import net.minecraft.block.{Block, Blocks}
 import net.minecraft.item.{Item, ItemGroup, ItemStack}
 import net.minecraftforge.common.MinecraftForge
@@ -34,6 +34,7 @@ object Ouroboros {
 
   BlocksRegistry._registry.register(_meb)
   BlockItemsRegistry._registry.register(_meb)
+  TileEntityRegistry._registry.register(_meb)
 
   // Register ourselves for server and other game events we are interested in
   MinecraftForge.EVENT_BUS.register(this)
@@ -46,7 +47,7 @@ object Ouroboros {
   private def setup(event: FMLCommonSetupEvent): Unit = {
     // some preinit code
     LOGGER.info("HELLO FROM PREINIT")
-    LOGGER.info("DIRT BLOCK >> {}", BlocksRegistry.STRUCTURE_T0.getId)
+    LOGGER.info("DIRT BLOCK >> {}", BlocksRegistry.STRUCTURE.getId)
   }
 
   private def doClientStuff(event: FMLClientSetupEvent): Unit = {

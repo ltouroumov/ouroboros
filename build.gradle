@@ -125,6 +125,7 @@ spotless {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    mavenCentral()
     maven {
         name = "Azure-SLP"
         url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
@@ -150,27 +151,12 @@ repositories {
 }
 
 String jei_version = '7.7.1.126'
-String mekanism_version = '10.0.22.449'
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.5-36.1.0'
-
-    // You may put jars on which you depend on in ./libs or you may define them like so..
-    // compile "some.group:artifact:version:classifier"
-    // compile "some.group:artifact:version"
-
-    // Real examples
-    // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // The 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    // provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // These dependencies get remapped to your current MCP mappings
-    // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
     // Just Enough Items
     compileOnly fg.deobf("mezz.jei:jei-1.16.5:${jei_version}:api")
@@ -184,13 +170,14 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    String scala_version = "2.13.5"
-    // https://mvnrepository.com/artifact/org.scala-lang/scala-library
-    implementation(group: 'org.scala-lang', name: 'scala-library', version: scala_version)
-    // A library of functional programing in Scala
-    // https://mvnrepository.com/artifact/org.typelevel/cats-core
-    implementation(group: 'org.typelevel', name: "cats-core_" + scala_version.substring(0, scala_version.lastIndexOf(".")), version: '2.6.0')
+    // Scala Dependencies
 
+    String scala_version = "2.13.5"
+    String scala_major_version = scala_version.substring(0, scala_version.lastIndexOf("."))
+
+    implementation(group: 'com.beachape', name: "enumeratum_2.13", version: '1.7.0')
+    implementation(group: 'org.scala-lang', name: 'scala-library', version: scala_version)
+    implementation(group: 'org.typelevel', name: "cats-core_2.13", version: '2.6.0')
     implementation(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: '2.13.5-build-2', classifier: 'dev')
 }
 

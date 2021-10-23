@@ -1,7 +1,14 @@
 {
   "variants": {
-    "machine_tier=t0": {
-      "model": "ouroboros:block/structure_t0"
-    }
+    "machine_tier=t0,machine_part=false": {"model": "ouroboros:block/structure_t0"},
+    "machine_tier=t0,machine_part=true": {"model": "ouroboros:block/structure_t0_m"},
+    "machine_tier=t1,machine_part=false": {"model": "ouroboros:block/structure_t0"},
+    "machine_tier=t1,machine_part=true": {"model": "ouroboros:block/structure_t0_m"},
+    "machine_tier=t2,machine_part=false": {"model": "ouroboros:block/structure_t0"},
+    "machine_tier=t2,machine_part=true": {"model": "ouroboros:block/structure_t0_m"},
+    "machine_tier=t3,machine_part=false": {"model": "ouroboros:block/structure_t0"},
+    "machine_tier=t3,machine_part=true": {"model": "ouroboros:block/structure_t0_m"},
+    "machine_tier=t4,machine_part=false": {"model": "ouroboros:block/structure_t0"},
+    "machine_tier=t4,machine_part=true": {"model": "ouroboros:block/structure_t0_m"}
   }
 }

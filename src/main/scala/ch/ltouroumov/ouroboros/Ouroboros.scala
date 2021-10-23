@@ -1,6 +1,7 @@
 package ch.ltouroumov.ouroboros
 
 import ch.ltouroumov.ouroboros.registry.{BlockItemsRegistry, BlocksRegistry, TileEntityRegistry}
+import ch.ltouroumov.ouroboros.utils.StrictLogging
 import net.minecraft.block.{Block, Blocks}
 import net.minecraft.item.{Item, ItemGroup, ItemStack}
 import net.minecraftforge.common.MinecraftForge
@@ -20,10 +21,8 @@ import org.apache.logging.log4j.LogManager
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Ouroboros.MOD_ID)
-object Ouroboros {
+object Ouroboros extends StrictLogging {
   final val MOD_ID = "ouroboros"
-  // Directly reference a log4j logger.
-  private val LOGGER = LogManager.getLogger
 
   private val _meb: IEventBus = FMLJavaModLoadingContext.get.getModEventBus
 
@@ -46,13 +45,13 @@ object Ouroboros {
 
   private def setup(event: FMLCommonSetupEvent): Unit = {
     // some preinit code
-    LOGGER.info("HELLO FROM PREINIT")
-    LOGGER.info("DIRT BLOCK >> {}", BlocksRegistry.STRUCTURE.getId)
+    logger.info("HELLO FROM PREINIT")
+    logger.info("DIRT BLOCK >> {}", BlocksRegistry.STRUCTURE.getId)
   }
 
   private def doClientStuff(event: FMLClientSetupEvent): Unit = {
     // do something that can only be done on the client
-    LOGGER.info("Got game settings {}", event.getMinecraftSupplier.get.options)
+    logger.info("Got game settings {}", event.getMinecraftSupplier.get.options)
   }
 
   private def enqueueIMC(event: InterModEnqueueEvent): Unit = {
@@ -61,7 +60,7 @@ object Ouroboros {
       "ouroboros",
       "helloworld",
       () => {
-        LOGGER.info("Hello world from the MDK")
+        logger.info("Hello world from the MDK")
         "Hello world"
       }
     )
@@ -71,14 +70,14 @@ object Ouroboros {
     // some example code to receive and process InterModComms from other mods
     import scala.jdk.StreamConverters._
     val messages = event.getIMCStream.toScala(LazyList).map(_.getMessageSupplier[String].get())
-    LOGGER.info("Got IMC {}", messages.mkString(", "))
+    logger.info("Got IMC {}", messages.mkString(", "))
   }
 
   // You can use SubscribeEvent and let the Event Bus discover methods to call
   @SubscribeEvent
   def onServerStarting(event: FMLServerStartingEvent): Unit = {
     // do something when the server starts
-    LOGGER.info("HELLO from server starting")
+    logger.info("HELLO from server starting")
   }
 
 }
@@ -87,18 +86,16 @@ object Ouroboros {
 // Event bus for receiving Registry Events)
 // The object must be at the top-level. Don't forget to fill modid.
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = Ouroboros.MOD_ID)
-object RegistryEvents {
-  private val LOGGER = LogManager.getLogger
-
+object RegistryEvents extends StrictLogging {
   @SubscribeEvent
   def onBlocksRegistry(blockRegistryEvent: RegistryEvent.Register[Block]): Unit = {
     // register a new block here
-    LOGGER.info("HELLO from Register Block")
+    logger.info("HELLO from Register Block")
   }
 
   @SubscribeEvent
   def onItemsRegistry(blockRegistryEvent: RegistryEvent.Register[Item]): Unit = {
     // register a new block here
-    LOGGER.info("HELLO from Register Item")
+    logger.info("HELLO from Register Item")
   }
 }

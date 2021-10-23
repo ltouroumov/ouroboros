@@ -2,9 +2,11 @@ package ch.ltouroumov.ouroboros.blocks
 
 import ch.ltouroumov.ouroboros.utils.StringEnumProperty
 import enumeratum.values.{StringEnum, StringEnumEntry}
+import net.minecraft.state.BooleanProperty
 
 object Properties {
   val MACHINE_TIER: StringEnumProperty[MachineTier] = StringEnumProperty("machine_tier", MachineTier)
+  val MACHINE_PART: BooleanProperty                 = BooleanProperty.create("machine_part")
 
   sealed abstract class MachineTier(val value: String) extends StringEnumEntry with Comparable[MachineTier] {
     override def compareTo(o: MachineTier): Int = value.compareTo(o.value)

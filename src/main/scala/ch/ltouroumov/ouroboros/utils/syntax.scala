@@ -1,16 +1,16 @@
 package ch.ltouroumov.ouroboros.utils
 
-import net.minecraft.block.BlockState
-import net.minecraft.block.pattern.BlockPattern
-import net.minecraft.state.BooleanProperty
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.World
+import net.minecraft.core.BlockPos
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.pattern.BlockPattern
+import net.minecraft.world.level.block.state.properties.BooleanProperty
 
 object syntax {
 
   implicit class BlockPatternOps(val pattern: BlockPattern) extends AnyVal {
-    def positions(result: BlockPattern.PatternHelper): Seq[BlockPos] =
+    def positions(result: BlockPattern.BlockPatternMatch): Seq[BlockPos] =
       for (
         y <- 0 until pattern.getHeight;
         x <- 0 until pattern.getWidth;
@@ -18,9 +18,9 @@ object syntax {
       ) yield result.getBlock(x, y, z).getPos
 
     def blockData(
-        result: BlockPattern.PatternHelper,
-        world: World
-    ): Seq[(BlockPos, BlockState, Option[TileEntity])] =
+        result: BlockPattern.BlockPatternMatch,
+        world: Level
+    ): Seq[(BlockPos, BlockState, Option[BlockEntity])] =
       positions(result).map(pos => (pos, world.getBlockState(pos), Option(world.getBlockEntity(pos))))
   }
 

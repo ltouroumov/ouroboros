@@ -1,10 +1,11 @@
-package ch.ltouroumov.ouroboros.blocks.other
+package ch.ltouroumov.ouroboros.blocks.structure
 
+import ch.ltouroumov.ouroboros.blocks.BaseBlockEntity
 import ch.ltouroumov.ouroboros.registry.BlockEntityRegistry
-import ch.ltouroumov.ouroboros.utils.{StrictLogging, BlockEntityHelpers}
+import ch.ltouroumov.ouroboros.utils.{BlockEntityHelpers, StrictLogging}
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.{CompoundTag, NbtUtils}
-import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityType}
 import net.minecraft.world.level.block.state.BlockState
 
 class StructureEntity(blockPos: BlockPos, blockState: BlockState)
@@ -46,4 +47,14 @@ class StructureEntity(blockPos: BlockPos, blockState: BlockState)
     }
     nbtData
   }
+}
+
+object StructureEntity extends BaseBlockEntity.Companion[StructureEntity] {
+
+  override def create(blockPos: BlockPos, blockState: BlockState): StructureEntity =
+    new StructureEntity(blockPos, blockState)
+
+  override def entityType: BlockEntityType[StructureEntity] =
+    BlockEntityRegistry.STRUCTURE.get()
+
 }

@@ -1,6 +1,7 @@
 package ch.ltouroumov.ouroboros
 
-import ch.ltouroumov.ouroboros.registry.{BlockEntityRegistry, BlockItemsRegistry, BlocksRegistry}
+import ch.ltouroumov.ouroboros.blocks.BlockEventHandler
+import ch.ltouroumov.ouroboros.registry._
 import ch.ltouroumov.ouroboros.utils.StrictLogging
 import net.minecraft.world.item.{CreativeModeTab, ItemStack}
 import net.minecraftforge.common.MinecraftForge
@@ -15,17 +16,21 @@ object Ouroboros extends StrictLogging {
   final val MOD_ID = "ouroboros"
 
   private val _meb: IEventBus = FMLJavaModLoadingContext.get.getModEventBus
+  _meb.addListener(BlockEventHandler.onClientSetup)
 
-  BlocksRegistry._registry.register(_meb)
-  BlockItemsRegistry._registry.register(_meb)
-  BlockEntityRegistry._registry.register(_meb)
+  setupRegistries(
+    BlockRegistry,
+    BlockItemRegistry,
+    BlockEntityRegistry,
+    ContainerRegistry
+  )
 
   // Register ourselves for server and other game events we are interested in
   MinecraftForge.EVENT_BUS.register(this)
 
   // Custom ItemGroup TAB
   val CREATIVE_TAB: CreativeModeTab = new CreativeModeTab("ouroboros") {
-    override def makeIcon: ItemStack = new ItemStack(BlockItemsRegistry.STRUCTURE_T0.get)
+    override def makeIcon: ItemStack = new ItemStack(BlockItemRegistry.STRUCTURE_T0.get)
   }
 
   // You can use SubscribeEvent and let the Event Bus discover methods to call
@@ -33,6 +38,10 @@ object Ouroboros extends StrictLogging {
   def onServerStarting(event: ServerStartingEvent): Unit = {
     // do something when the server starts
     logger.info("HELLO from server starting")
+  }
+
+  private def setupRegistries(registries: AbstractRegistry[_]*): Unit = {
+    registries.foreach(_.registry.register(_meb))
   }
 
 }

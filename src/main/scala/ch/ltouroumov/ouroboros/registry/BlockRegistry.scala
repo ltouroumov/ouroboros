@@ -1,19 +1,17 @@
 package ch.ltouroumov.ouroboros.registry
 
-import ch.ltouroumov.ouroboros.Ouroboros
 import ch.ltouroumov.ouroboros.blocks.BaseBlock
-import ch.ltouroumov.ouroboros.blocks.machine.CrusherMachineBlock
-import ch.ltouroumov.ouroboros.blocks.other.StructureBlock
-import net.minecraft.world.level.block.{Block, SoundType}
+import ch.ltouroumov.ouroboros.blocks.crusher.CrusherMachineBlock
+import ch.ltouroumov.ouroboros.blocks.structure.StructureBlock
 import net.minecraft.world.level.block.state.BlockBehaviour
+import net.minecraft.world.level.block.{Block, SoundType}
 import net.minecraft.world.level.material.Material
-import net.minecraftforge.registries.{DeferredRegister, ForgeRegistries, RegistryObject}
+import net.minecraftforge.registries.{ForgeRegistries, RegistryObject}
 
-object BlocksRegistry {
-  val _registry: DeferredRegister[Block] = DeferredRegister.create(ForgeRegistries.BLOCKS, Ouroboros.MOD_ID)
+object BlockRegistry extends AbstractRegistry(ForgeRegistries.BLOCKS) {
 
   private def createBlock0[T <: Block](name: String, block: => T): RegistryObject[T] =
-    _registry.register[T](name, () => block)
+    registry.register[T](name, () => block)
 
   private def createBlock[T <: BaseBlock](
       name: String,

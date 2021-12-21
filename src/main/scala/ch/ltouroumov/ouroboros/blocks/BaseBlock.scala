@@ -9,6 +9,6 @@ object BaseBlock {
   trait Companion[T <: BlockBehaviour] {
     def apply(properties: BlockBehaviour.Properties): T
 
-    def block(): T
+    def block: T
   }
 }

@@ -1,20 +1,20 @@
-package ch.ltouroumov.ouroboros.blocks.other
+package ch.ltouroumov.ouroboros.blocks.structure
 
 import ch.ltouroumov.ouroboros.blocks
 import ch.ltouroumov.ouroboros.blocks.Properties.MachineTier
-import ch.ltouroumov.ouroboros.blocks.machine.CrusherMachineEntity
-import ch.ltouroumov.ouroboros.blocks.{BaseEntityBlock, Properties}
-import ch.ltouroumov.ouroboros.registry.BlocksRegistry
+import ch.ltouroumov.ouroboros.blocks.crusher.CrusherMachineEntity
+import ch.ltouroumov.ouroboros.blocks.{BaseBlockEntity, BaseEntityBlock, Properties}
+import ch.ltouroumov.ouroboros.registry.BlockRegistry
 import ch.ltouroumov.ouroboros.utils.StrictLogging
 import ch.ltouroumov.ouroboros.utils.syntax.BlockStateOps
 import net.minecraft.core.BlockPos
-import net.minecraft.world.{InteractionHand, InteractionResult}
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.{BlockBehaviour, BlockState, StateDefinition}
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.{InteractionHand, InteractionResult}
 
 class StructureBlock(properties: BlockBehaviour.Properties) extends BaseEntityBlock(properties) with StrictLogging {
   registerDefaultState(
@@ -28,7 +28,7 @@ class StructureBlock(properties: BlockBehaviour.Properties) extends BaseEntityBl
     builder.add(Properties.MACHINE_TIER, Properties.MACHINE_PART)
 
   override def newBlockEntity(blockPos: BlockPos, blockState: BlockState): BlockEntity =
-    Option.when(blockState.getValue(Properties.MACHINE_PART))(StructureBlock.entity(blockPos, blockState)).orNull
+    Option.when(blockState.getValue(Properties.MACHINE_PART))(StructureEntity.create(blockPos, blockState)).orNull
 
   override def playerWillDestroy(
       world: Level,
@@ -39,10 +39,10 @@ class StructureBlock(properties: BlockBehaviour.Properties) extends BaseEntityBl
     super.playerWillDestroy(world, position, blockState, player)
     getMachineEntity(world, position) match {
       case Some(entity) =>
-        logger.debug("Has machine, forwarding destruction")
+        logger.info("Has machine, forwarding destruction")
         entity.structureDestroyed(position)
       case None =>
-        logger.debug("No machine")
+        logger.info("No machine")
     }
   }
 
@@ -59,10 +59,10 @@ class StructureBlock(properties: BlockBehaviour.Properties) extends BaseEntityBl
     else
       getMachineBlockState(world, position) match {
         case Some(block) =>
-          logger.debug(s"Structure block $position ($block) forward use call")
+          logger.info(s"Structure block $position ($block) forward use call")
           block.use(world, player, hand, hit)
         case None =>
-          logger.debug(s"Structure block $position has no entity")
+          logger.info(s"Structure block $position has no entity")
           InteractionResult.PASS
       }
   }
@@ -95,7 +95,6 @@ class StructureBlock(properties: BlockBehaviour.Properties) extends BaseEntityBl
 object StructureBlock extends blocks.BaseEntityBlock.Companion[StructureBlock, StructureEntity] {
   override def apply(properties: BlockBehaviour.Properties): StructureBlock = new StructureBlock(properties)
 
-  override def block(): StructureBlock = BlocksRegistry.STRUCTURE.get()
-  override def entity(blockPos: BlockPos, blockState: BlockState): StructureEntity =
-    new StructureEntity(blockPos, blockState)
+  override def block: StructureBlock                              = BlockRegistry.STRUCTURE.get()
+  override def entity: BaseBlockEntity.Companion[StructureEntity] = StructureEntity
 }

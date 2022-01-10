@@ -14,19 +14,20 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.{BaseContainerBlockEntity, BlockEntityTicker, BlockEntityType}
 import net.minecraft.world.level.block.state.BlockState
 
-import java.util
+import scala.collection.mutable
 
 class CrusherMachineEntity(blockPos: BlockPos, blockState: BlockState)
     extends BaseContainerBlockEntity(BlockEntityRegistry.CRUSHER.get(), blockPos, blockState)
     with BlockEntityHelpers
     with StrictLogging {
 
+  private val _contentsSize: Int = 20
+
   /** Slots Allocations Inputs: 0-8 Outputs: 9-17 Upgrades: 18-20
     */
-  private var _contents: Map[Int, ItemStack] = Map.empty
-  private val _contentsSize: Int             = 20
-  private var _tickCounter: Int              = 0
-  private var _structure: Seq[BlockPos]      = Seq.empty
+  private val _contents: mutable.Map[Int, ItemStack] = mutable.Map.empty
+  private var _tickCounter: Int                      = 0
+  private var _structure: Seq[BlockPos]              = Seq.empty
 
   def checkValid(): Boolean = _structure.forall { pos =>
     level.getBlockEntity(pos) match {
@@ -75,32 +76,31 @@ class CrusherMachineEntity(blockPos: BlockPos, blockState: BlockState)
   override def getItem(slot: Int): ItemStack = _contents.getOrElse(slot, ItemStack.EMPTY)
 
   override def removeItem(slot: Int, quantity: Int): ItemStack = {
-    _contents.get(slot) match {
-      case Some(stack) =>
-        setter { stack.split(quantity) }
-      case None =>
-        ItemStack.EMPTY
-    }
+    if (slot >= 0 && slot < _contentsSize && quantity > 0)
+      _contents.get(slot) match {
+        case Some(stack) if !stack.isEmpty => stack.split(quantity)
+        case _                             => ItemStack.EMPTY
+      }
+    else
+      ItemStack.EMPTY
   }
 
-  override def removeItemNoUpdate(p_18951_ : Int): ItemStack = {}
-
-  def removeItem(items: util.List[ItemStack], slot: Int, stackSize: Int): ItemStack = {
-    if (slot >= 0 && slot < items.size && !items.get(slot).isEmpty && stackSize > 0)
-      items.get(slot).split(stackSize)
-    else ItemStack.EMPTY
+  override def removeItemNoUpdate(slot: Int): ItemStack = {
+    if (slot >= 0 && slot < _contentsSize)
+      _contents.put(slot, ItemStack.EMPTY) getOrElse ItemStack.EMPTY
+    else
+      ItemStack.EMPTY
   }
 
-  def takeItem(items: util.List[ItemStack], slot: Int): ItemStack = {
-    if (slot >= 0 && slot < items.size) items.set(slot, ItemStack.EMPTY)
-    else ItemStack.EMPTY
+  override def setItem(slot: Int, stack: ItemStack): Unit = setter {
+    if (stack.getCount > this.getMaxStackSize)
+      stack.setCount(this.getMaxStackSize)
+    _contents.put(slot, stack)
   }
 
-  override def setItem(slot: Int, stack: ItemStack): Unit = setter { _items = Some(stack) }
+  override def stillValid(player: Player) = true
 
-  override def stillValid(player: Player): Boolean = true
-
-  override def clearContent(): Unit = setter { _items = None }
+  override def clearContent(): Unit = setter { _contents.clear() }
 }
 
 object CrusherMachineEntity extends BaseBlockEntity.Companion[CrusherMachineEntity] {

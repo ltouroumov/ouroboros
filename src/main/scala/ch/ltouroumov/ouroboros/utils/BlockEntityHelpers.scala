@@ -5,9 +5,14 @@ import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityTicker, B
 
 trait BlockEntityHelpers { self: BlockEntity =>
 
-  def setter(work: => Unit): self.type = {
-    work
+  def modifier[T](work: => T): T = {
+    val res = work
     setChanged()
+    res
+  }
+
+  def setter(work: => Unit): self.type = {
+    modifier(work)
     self
   }
 

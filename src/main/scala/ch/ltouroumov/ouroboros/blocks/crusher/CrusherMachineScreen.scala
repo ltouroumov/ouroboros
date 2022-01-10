@@ -1,5 +1,6 @@
 package ch.ltouroumov.ouroboros.blocks.crusher
 
+import ch.ltouroumov.ouroboros.Ouroboros
 import ch.ltouroumov.ouroboros.blocks.crusher.CrusherMachineScreen.CONTAINER_BACKGROUND
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
@@ -16,8 +17,8 @@ class CrusherMachineScreen(menu: CrusherMachineMenu, playerInventory: Inventory,
 
   leftPos = 0
   topPos = 0
-  imageWidth = 175
-  imageHeight = 201
+  imageWidth = 180
+  imageHeight = 208
 
   override def render(poseStack: PoseStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     this.renderBackground(poseStack)
@@ -29,16 +30,12 @@ class CrusherMachineScreen(menu: CrusherMachineMenu, playerInventory: Inventory,
     RenderSystem.setShader(GameRenderer.getPositionTexShader _)
     RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
     RenderSystem.setShaderTexture(0, CONTAINER_BACKGROUND)
-    val i = (this.width - this.imageWidth) / 2
-    val j = (this.height - this.imageHeight) / 2
-    this.blit(poseStack, i, j, 0, 0, this.imageWidth, 3 * 18 + 17)
-    this.blit(poseStack, i, j + 3 * 18 + 17, 0, 126, this.imageWidth, 96)
   }
 }
 
 object CrusherMachineScreen {
 
-  val CONTAINER_BACKGROUND: ResourceLocation = new ResourceLocation("textures/gui/container/generic_54.png")
+  val CONTAINER_BACKGROUND: ResourceLocation = new ResourceLocation(Ouroboros.MOD_ID,"textures/gui/container/crusher_gui.png")
 
   def apply(menu: CrusherMachineMenu, playerInventory: Inventory, menuName: Component): CrusherMachineScreen =
     new CrusherMachineScreen(menu, playerInventory, menuName)

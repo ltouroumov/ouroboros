@@ -12,7 +12,7 @@ class CrusherMachineMenu(windowId: Int, val playerInventory: Inventory, val enti
     with ContainerHelpers {
 
   addSlot(new Slot(entity, 0, 80, 35))
-  playerInventoryMenu(playerInventory, vOffset = 100)
+  playerInventoryMenu(playerInventory, vOffset = 50)(addSlot(_))
 
   override def stillValid(player: Player): Boolean =
     entity.stillValid(player)

@@ -35,7 +35,8 @@ class CrusherMachineScreen(menu: CrusherMachineMenu, playerInventory: Inventory,
 
 object CrusherMachineScreen {
 
-  val CONTAINER_BACKGROUND: ResourceLocation = new ResourceLocation(Ouroboros.MOD_ID,"textures/gui/container/crusher_gui.png")
+  val CONTAINER_BACKGROUND: ResourceLocation =
+    new ResourceLocation(Ouroboros.MOD_ID, "textures/gui/container/crusher_gui.png")
 
   def apply(menu: CrusherMachineMenu, playerInventory: Inventory, menuName: Component): CrusherMachineScreen =
     new CrusherMachineScreen(menu, playerInventory, menuName)

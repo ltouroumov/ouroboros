@@ -7,9 +7,11 @@ buildscript {
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath "com.diffplug.spotless:spotless-plugin-gradle:5.17.0"
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.32"
     }
 }
 apply plugin: 'scala'
+apply plugin: "com.github.maiflai.scalatest"
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'maven-publish'
@@ -188,6 +190,10 @@ dependencies {
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(), version: "2.13.7-build-1", classifier: "with-library") {
         transitive(false)
     }
+
+    testImplementation 'org.scalatest:scalatest_2.13:3.2.0'
+    testImplementation 'com.vladsch.flexmark:flexmark-all:0.35.10'
+    testImplementation 'org.scalamock:scalamock_2.13:5.2.0'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

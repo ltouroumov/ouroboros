@@ -3,7 +3,7 @@ package ch.ltouroumov.ouroboros.utils
 import net.minecraft.world.Container
 import net.minecraft.world.inventory.Slot
 
-object MenuBuilder {
+object MenuBuilder extends StrictLogging {
 
   case class Size(width: Int, height: Int) {
     def +(other: Size): Size       = Size(width + other.width, height + other.height)
@@ -63,24 +63,29 @@ object MenuBuilder {
 
   def createContainer(addSlotF: Slot => Slot)(view: ContainerView): Unit = {
 
-    def walk(view: View, leftPos: Int, topPos: Int): Size =
+    def walk(view: View, leftPos: Int, topPos: Int): Size = {
+      logger.info(s"Layout $view with ($leftPos,$topPos)")
       view match {
         case VStack(items) =>
           items.foldLeft(Size.ZERO) { (size, innerView) =>
+            logger.info(s"VStack Item at ($leftPos,$topPos) + $size")
             walk(innerView, leftPos, topPos + size.height).extendV(size)
           }
         case HStack(items) =>
           items.foldLeft(Size.ZERO) { (size, innerView) =>
-            walk(innerView, leftPos, topPos + size.height).extendH(size)
+            logger.info(s"HStack Item at ($leftPos,$topPos) + $size")
+            walk(innerView, leftPos + size.width, topPos).extendH(size)
           }
         case grid: Grid =>
           grid.itemRows.foldLeft(Size.ZERO) { (rowSize, rowItems) =>
+            logger.info(s"Grid Row ($leftPos,$topPos) + $rowSize")
             rowItems
               .foldLeft(Size.ZERO) { (colSize, colItem) =>
+                logger.info(s"Grid Column ($leftPos,$topPos) + $colSize")
                 walk(
                   view = colItem,
-                  leftPos = leftPos + rowSize.width + colSize.width,
-                  topPos = topPos + rowSize.height + colSize.height
+                  leftPos = leftPos + colSize.width,
+                  topPos = topPos + rowSize.height
                 ).extendH(colSize)
               }
               .extendV(rowSize)
@@ -93,6 +98,7 @@ object MenuBuilder {
         case Margins(left, top, view) =>
           walk(view, leftPos + left, topPos + top)
       }
+    }
 
     walk(view, topPos = 0, leftPos = 0)
   }
@@ -100,7 +106,7 @@ object MenuBuilder {
   def playerInventoryViews(inventory: Container): Seq[View] = {
     val inventoryView =
       HStack(
-        Spacer(width = 9),
+        Spacer(width = 10),
         Grid(rows = 3, cols = 9).addAll(
           for {
             row <- 0 until 3
@@ -111,7 +117,7 @@ object MenuBuilder {
 
     val hotbarView =
       HStack(
-        Spacer(width = 9),
+        Spacer(width = 10),
         Grid(rows = 1, cols = 9).addAll(
           for (col <- 0 until 9) yield ItemSlotWrapper(inventory, col)
         )

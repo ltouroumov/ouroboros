@@ -15,8 +15,6 @@ import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 class CrusherMachineScreen(menu: CrusherMachineMenu, playerInventory: Inventory, menuName: Component)
     extends AbstractContainerScreen[CrusherMachineMenu](menu, playerInventory, menuName) {
 
-  leftPos = 0
-  topPos = 0
   imageWidth = 180
   imageHeight = 208
 
@@ -30,13 +28,14 @@ class CrusherMachineScreen(menu: CrusherMachineMenu, playerInventory: Inventory,
     RenderSystem.setShader(GameRenderer.getPositionTexShader _)
     RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
     RenderSystem.setShaderTexture(0, CONTAINER_BACKGROUND)
+    this.blit(poseStack, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight)
   }
 }
 
 object CrusherMachineScreen {
 
   val CONTAINER_BACKGROUND: ResourceLocation =
-    new ResourceLocation(Ouroboros.MOD_ID, "textures/gui/container/crusher_gui.png")
+    new ResourceLocation(Ouroboros.MOD_ID, "textures/gui/crusher_gui.png")
 
   def apply(menu: CrusherMachineMenu, playerInventory: Inventory, menuName: Component): CrusherMachineScreen =
     new CrusherMachineScreen(menu, playerInventory, menuName)

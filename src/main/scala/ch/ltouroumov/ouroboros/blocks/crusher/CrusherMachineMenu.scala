@@ -16,9 +16,9 @@ class CrusherMachineMenu(windowId: Int, val playerInventory: Inventory, val enti
 
   createContainer(addSlot)(
     VStack(
-      Spacer(height = 21),
+      Spacer(height = 22),
       HStack(
-        Spacer(width = 18),
+        Spacer(width = 19),
         Grid(rows = 3, cols = 3).addAll(
           for (slot <- 0 until 9) yield ItemSlotWrapper(entity, slot)
         ),
@@ -29,7 +29,7 @@ class CrusherMachineMenu(windowId: Int, val playerInventory: Inventory, val enti
       ),
       Spacer(height = 5),
       HStack(
-        Spacer(width = 18),
+        Spacer(width = 19),
         Grid(rows = 1, cols = 3).addAll(
           for (slot <- 18 until 21) yield ItemSlotWrapper(entity, slot)
         )

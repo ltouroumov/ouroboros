@@ -1,0 +1,10 @@
+{
+  "type": "ouroboros:crusher",
+  "output": {
+    "item": "minecraft:coal",
+    "count": 1
+  },
+  "input": {
+    "item": "minecraft:diamond_ore"
+  }
+}

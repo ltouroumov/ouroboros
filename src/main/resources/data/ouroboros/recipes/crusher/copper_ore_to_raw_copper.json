@@ -1,0 +1,10 @@
+{
+  "type": "ouroboros:crusher",
+  "output": {
+    "item": "minecraft:raw_copper",
+    "count": 5
+  },
+  "input": {
+    "item": "minecraft:copper_ore"
+  }
+}

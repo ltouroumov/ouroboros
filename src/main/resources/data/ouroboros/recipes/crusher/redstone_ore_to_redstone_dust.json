@@ -1,0 +1,10 @@
+{
+  "type": "ouroboros:crusher",
+  "output": {
+    "item": "minecraft:redstone",
+    "count": 16
+  },
+  "input": {
+    "item": "minecraft:redstone_ore"
+  }
+}

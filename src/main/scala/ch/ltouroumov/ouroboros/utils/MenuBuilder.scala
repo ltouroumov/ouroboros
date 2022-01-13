@@ -54,8 +54,12 @@ object MenuBuilder extends StrictLogging {
 
     lazy val size: Size = Size(cols + itemSize.width, rows * itemSize.height)
   }
-  case class ItemSlotWrapper(container: Container, slot: Int) extends View {
+  case class ItemSlotWrapper(constructor: (Int, Int) => Slot) extends View {
     val size: Size = Size.SLOT
+  }
+  object ItemSlotWrapper {
+    def of(container: Container, slot: Int) =
+      new ItemSlotWrapper(new Slot(container, slot, _, _))
   }
   case class Margins(left: Int = 0, top: Int = 0, view: View) extends View {
     lazy val size: Size = Size(left, top) + view.size
@@ -64,24 +68,19 @@ object MenuBuilder extends StrictLogging {
   def createContainer(addSlotF: Slot => Slot)(view: ContainerView): Unit = {
 
     def walk(view: View, leftPos: Int, topPos: Int): Size = {
-      logger.info(s"Layout $view with ($leftPos,$topPos)")
       view match {
         case VStack(items) =>
           items.foldLeft(Size.ZERO) { (size, innerView) =>
-            logger.info(s"VStack Item at ($leftPos,$topPos) + $size")
             walk(innerView, leftPos, topPos + size.height).extendV(size)
           }
         case HStack(items) =>
           items.foldLeft(Size.ZERO) { (size, innerView) =>
-            logger.info(s"HStack Item at ($leftPos,$topPos) + $size")
             walk(innerView, leftPos + size.width, topPos).extendH(size)
           }
         case grid: Grid =>
           grid.itemRows.foldLeft(Size.ZERO) { (rowSize, rowItems) =>
-            logger.info(s"Grid Row ($leftPos,$topPos) + $rowSize")
             rowItems
               .foldLeft(Size.ZERO) { (colSize, colItem) =>
-                logger.info(s"Grid Column ($leftPos,$topPos) + $colSize")
                 walk(
                   view = colItem,
                   leftPos = leftPos + colSize.width,
@@ -92,8 +91,8 @@ object MenuBuilder extends StrictLogging {
           }
         case spacer: Spacer =>
           spacer.size
-        case itemSlot @ ItemSlotWrapper(container, slot) =>
-          addSlotF(new Slot(container, slot, leftPos, topPos))
+        case itemSlot @ ItemSlotWrapper(constructor) =>
+          addSlotF(constructor(leftPos, topPos))
           itemSlot.size
         case Margins(left, top, view) =>
           walk(view, leftPos + left, topPos + top)
@@ -111,7 +110,7 @@ object MenuBuilder extends StrictLogging {
           for {
             row <- 0 until 3
             col <- 0 until 9
-          } yield ItemSlotWrapper(inventory, col + row * 9 + 9)
+          } yield ItemSlotWrapper.of(inventory, col + row * 9 + 9)
         )
       )
 
@@ -119,7 +118,7 @@ object MenuBuilder extends StrictLogging {
       HStack(
         Spacer(width = 10),
         Grid(rows = 1, cols = 9).addAll(
-          for (col <- 0 until 9) yield ItemSlotWrapper(inventory, col)
+          for (col <- 0 until 9) yield ItemSlotWrapper.of(inventory, col)
         )
       )
 

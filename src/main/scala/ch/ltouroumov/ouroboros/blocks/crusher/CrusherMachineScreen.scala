@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Inventory
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 
@@ -30,6 +31,22 @@ class CrusherMachineScreen(menu: CrusherMachineMenu, playerInventory: Inventory,
     RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
     RenderSystem.setShaderTexture(0, CONTAINER_BACKGROUND)
     this.blit(poseStack, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight)
+
+    val progress = menu.processingProgress
+    if (progress > 0) {
+      this.blit(
+        // destination
+        poseStack,
+        leftPos + 75,
+        topPos + 44,
+        // source pos
+        180,
+        0,
+        // source size
+        Mth.clamp(progress, 0, 30),
+        7
+      )
+    }
   }
 }
 

@@ -19,18 +19,18 @@ class MenuBuilderTest extends AnyWordSpecLike with MockFactory {
         HStack(
           Spacer(width = 18),
           Grid(rows = 3, cols = 3).addAll(
-            for (slot <- 0 until 9) yield ItemSlotWrapper(entity, slot)
+            for (slot <- 0 until 9) yield ItemSlotWrapper.of(entity, slot)
           ),
           Spacer(width = 36),
           Grid(rows = 3, cols = 3).addAll(
-            for (slot <- 9 until 18) yield ItemSlotWrapper(entity, slot)
+            for (slot <- 9 until 18) yield ItemSlotWrapper.of(entity, slot)
           )
         ),
         Spacer(height = 5),
         HStack(
           Spacer(width = 18),
           Grid(rows = 1, cols = 3).addAll(
-            for (slot <- 18 until 21) yield ItemSlotWrapper(entity, slot)
+            for (slot <- 18 until 21) yield ItemSlotWrapper.of(entity, slot)
           )
         ),
         Spacer(height = 27)

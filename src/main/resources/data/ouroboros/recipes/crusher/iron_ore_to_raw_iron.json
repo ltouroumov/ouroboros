@@ -1,0 +1,10 @@
+{
+  "type": "ouroboros:crusher",
+  "output": {
+    "item": "minecraft:raw_iron",
+    "count": 5
+  },
+  "input": {
+    "item": "minecraft:iron_ore"
+  }
+}

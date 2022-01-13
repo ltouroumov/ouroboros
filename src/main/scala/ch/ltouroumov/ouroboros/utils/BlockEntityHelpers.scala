@@ -5,15 +5,31 @@ import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityTicker, B
 
 trait BlockEntityHelpers { self: BlockEntity =>
 
+  private var _singleUpdate: Boolean = false
+  private var _needsUpdate: Boolean  = false
+
   def modifier[T](work: => T): T = {
     val res = work
-    setChanged()
+    if (_singleUpdate)
+      _needsUpdate = true
+    else setChanged()
     res
   }
 
   def setter(work: => Unit): self.type = {
     modifier(work)
     self
+  }
+
+  def inSingleUpdate[T](block: => T): T = {
+    _singleUpdate = true
+    val res = block
+    if (_needsUpdate) {
+      setChanged()
+      _needsUpdate = false
+    }
+    _singleUpdate = false
+    res
   }
 
 }

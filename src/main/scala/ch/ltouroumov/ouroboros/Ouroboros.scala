@@ -22,7 +22,8 @@ object Ouroboros extends StrictLogging {
     BlockRegistry,
     BlockItemRegistry,
     BlockEntityRegistry,
-    ContainerRegistry
+    ContainerRegistry,
+    RecipeTypeRegistry
   )
 
   // Register ourselves for server and other game events we are interested in

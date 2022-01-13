@@ -1,11 +1,6 @@
 package ch.ltouroumov.ouroboros.blocks.crusher
 
-import ch.ltouroumov.ouroboros.blocks.crusher.CrusherMachineEntity.{
-  ACTIVE_RECIPE_SLOT,
-  INPUT_SLOTS,
-  OUTPUT_SLOTS,
-  UPGRADE_SLOTS
-}
+import ch.ltouroumov.ouroboros.blocks.crusher.CrusherMachineEntity._
 import ch.ltouroumov.ouroboros.blocks.crusher.CrusherMachineMenu.{ActiveRecipeSlot, OutputSlot}
 import ch.ltouroumov.ouroboros.registry.ContainerRegistry
 import ch.ltouroumov.ouroboros.utils.ContainerHelpers
@@ -32,19 +27,27 @@ class CrusherMachineMenu(
       HStack(
         Spacer(width = 19),
         Grid(rows = 3, cols = 3).addAll(
+          // Slots 0-8
           INPUT_SLOTS.map(ItemSlotWrapper.of(container, _))
         ),
         Spacer(width = 9),
-        ItemSlotWrapper(new ActiveRecipeSlot(container, ACTIVE_RECIPE_SLOT, _, _)),
+        ItemSlotWrapper(
+          // Slot 9
+          new ActiveRecipeSlot(container, ACTIVE_RECIPE_SLOT, _, _)
+        ),
         Spacer(width = 9),
         Grid(rows = 3, cols = 3).addAll(
+          // Slots 10-18
           OUTPUT_SLOTS.map(slot => ItemSlotWrapper(new OutputSlot(container, slot, _, _)))
         )
       ),
       Spacer(height = 5),
       HStack(
         Spacer(width = 19),
-        Grid(rows = 1, cols = 3).addAll(UPGRADE_SLOTS.map(ItemSlotWrapper.of(container, _)))
+        Grid(rows = 1, cols = 3).addAll(
+          // Slots 19-21
+          UPGRADE_SLOTS.map(ItemSlotWrapper.of(container, _))
+        )
       ),
       Spacer(height = 27)
     ).addAll(playerInventoryViews(playerInventory))
@@ -57,6 +60,47 @@ class CrusherMachineMenu(
     if (processProgress > 0 && processTime > 0)
       (processProgress * 30) / processTime
     else 0
+  }
+
+  // https://discord.com/channels/313125603924639766/915304642668290119/931240812052893786
+  // https://github.com/Shadows-of-Fire/Placebo/blob/6f820bf7d7b89494894b067a2a73888fd579ea36/src/main/java/shadows/placebo/container/QuickMoveHandler.java
+  override def quickMoveStack(player: Player, slotId: Int): ItemStack = {
+    var outputStack = ItemStack.EMPTY
+    val slot        = this.slots.get(slotId)
+    if (slot != null && slot.hasItem) {
+      val slotStack = slot.getItem
+      outputStack = slotStack.copy
+
+      if (slotId >= 0 && slotId < 9) {
+        // Input slots => move to inventory
+        if (!this.moveItemStackTo(slotStack, ContentsSize, this.slots.size, true)) {
+          return ItemStack.EMPTY
+        }
+      } else if (slotId == 9) {
+        // Active slot => do nothing
+        return ItemStack.EMPTY
+      } else if (slotId >= 10 && slotId < 19) {
+        // Output slots => move to inventory
+        if (!this.moveItemStackTo(slotStack, ContentsSize, this.slots.size, true)) {
+          return ItemStack.EMPTY
+        }
+      } else if (slotId >= 19 && slotId < 22) {
+        // Upgrade slots => move to inventory
+        if (!this.moveItemStackTo(slotStack, ContentsSize, this.slots.size, true)) {
+          return ItemStack.EMPTY
+        }
+      } else if (!this.moveItemStackTo(slotStack, 0, 9, false)) {
+        return ItemStack.EMPTY
+      }
+
+      if (slotStack.isEmpty) {
+        slot.set(ItemStack.EMPTY)
+      } else {
+        slot.setChanged()
+      }
+    }
+
+    outputStack
   }
 
   override def stillValid(player: Player): Boolean =

@@ -17,6 +17,7 @@ class CrusherMachineScreen(menu: CrusherMachineMenu, playerInventory: Inventory,
 
   imageWidth = 180
   imageHeight = 208
+  inventoryLabelY = 113
 
   override def render(poseStack: PoseStack, mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     this.renderBackground(poseStack)

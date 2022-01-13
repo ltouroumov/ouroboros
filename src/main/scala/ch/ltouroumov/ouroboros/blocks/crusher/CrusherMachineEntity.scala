@@ -5,8 +5,10 @@ import ch.ltouroumov.ouroboros.blocks.{BaseBlockEntity, Properties}
 import ch.ltouroumov.ouroboros.registry.BlockEntityRegistry
 import ch.ltouroumov.ouroboros.utils.syntax._
 import ch.ltouroumov.ouroboros.utils.{BlockEntityHelpers, StrictLogging}
-import net.minecraft.core.BlockPos
+import net.minecraft.core.{BlockPos, NonNullList}
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.{Component, TranslatableComponent}
+import net.minecraft.world.ContainerHelper
 import net.minecraft.world.entity.player.{Inventory, Player}
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
@@ -14,20 +16,18 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.{BaseContainerBlockEntity, BlockEntityTicker, BlockEntityType}
 import net.minecraft.world.level.block.state.BlockState
 
-import scala.collection.mutable
-
 class CrusherMachineEntity(blockPos: BlockPos, blockState: BlockState)
     extends BaseContainerBlockEntity(BlockEntityRegistry.CRUSHER.get(), blockPos, blockState)
     with BlockEntityHelpers
     with StrictLogging {
 
-  private val _contentsSize: Int = 20
+  private val _contentsSize: Int = 21
 
   /** Slots Allocations Inputs: 0-8 Outputs: 9-17 Upgrades: 18-20
     */
-  private val _contents: mutable.Map[Int, ItemStack] = mutable.Map.empty
-  private var _tickCounter: Int                      = 0
-  private var _structure: Seq[BlockPos]              = Seq.empty
+  private val _contents: NonNullList[ItemStack] = NonNullList.withSize(_contentsSize, ItemStack.EMPTY)
+  private var _tickCounter: Int                 = 0
+  private var _structure: Seq[BlockPos]         = Seq.empty
 
   def checkValid(): Boolean = _structure.forall { pos =>
     level.getBlockEntity(pos) match {
@@ -73,13 +73,13 @@ class CrusherMachineEntity(blockPos: BlockPos, blockState: BlockState)
 
   override def isEmpty: Boolean = _contents.isEmpty
 
-  override def getItem(slot: Int): ItemStack = _contents.getOrElse(slot, ItemStack.EMPTY)
+  override def getItem(slot: Int): ItemStack = _contents.get(slot)
 
   override def removeItem(slot: Int, quantity: Int): ItemStack = {
     if (slot >= 0 && slot < _contentsSize && quantity > 0)
       _contents.get(slot) match {
-        case Some(stack) if !stack.isEmpty => stack.split(quantity)
-        case _                             => ItemStack.EMPTY
+        case stack if !stack.isEmpty => stack.split(quantity)
+        case _                       => ItemStack.EMPTY
       }
     else
       ItemStack.EMPTY
@@ -87,7 +87,7 @@ class CrusherMachineEntity(blockPos: BlockPos, blockState: BlockState)
 
   override def removeItemNoUpdate(slot: Int): ItemStack = {
     if (slot >= 0 && slot < _contentsSize)
-      _contents.put(slot, ItemStack.EMPTY) getOrElse ItemStack.EMPTY
+      _contents.set(slot, ItemStack.EMPTY)
     else
       ItemStack.EMPTY
   }
@@ -95,12 +95,22 @@ class CrusherMachineEntity(blockPos: BlockPos, blockState: BlockState)
   override def setItem(slot: Int, stack: ItemStack): Unit = setter {
     if (stack.getCount > this.getMaxStackSize)
       stack.setCount(this.getMaxStackSize)
-    _contents.put(slot, stack)
+    _contents.set(slot, stack)
   }
 
   override def stillValid(player: Player) = true
 
   override def clearContent(): Unit = setter { _contents.clear() }
+
+  override def load(tag: CompoundTag): Unit = {
+    super.load(tag)
+    ContainerHelper.loadAllItems(tag, _contents)
+  }
+
+  override def saveAdditional(tag: CompoundTag): Unit = {
+    super.save(tag)
+    ContainerHelper.saveAllItems(tag, _contents)
+  }
 }
 
 object CrusherMachineEntity extends BaseBlockEntity.Companion[CrusherMachineEntity] {

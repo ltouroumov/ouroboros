@@ -1,11 +1,13 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://maven.parchmentmc.org' }
         maven { url = "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
         classpath "com.diffplug.spotless:spotless-plugin-gradle:5.17.0"
         classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.32"
     }
@@ -13,6 +15,7 @@ buildscript {
 apply plugin: 'scala'
 apply plugin: "com.github.maiflai.scalatest"
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'maven-publish'
 apply plugin: "com.diffplug.spotless"
@@ -37,7 +40,8 @@ minecraft {
     //
     // Use non-default mappings at your own risk. They may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'official', version: '1.18.1'
+    // mappings channel: 'official', version: '1.18.1'
+    mappings channel: 'parchment', version: '2021.12.19-1.18.1'
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
